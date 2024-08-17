@@ -1,0 +1,90 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+main {
+    height: 100%;
+    background-image: url("./market2.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.list_container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+}
+
+.basic_layout {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 80%;
+    width: 40%;
+    background-color: black;
+    padding: 20px;
+    box-sizing: border-box;
+    border-radius: 10px;
+}
+
+.header {
+    margin-bottom: 20px;
+}
+
+.itens {
+    flex-grow: 1;
+    width: 100%;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+/* -----Footer----- */
+
+
+.footer {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+}
+
+.preco {
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.buttons button {
+    width: 48%;
+}
+
+.form-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.form-container input {
+    width: 40%; /* Ajuste conforme necessário */
+    margin-right: 10px;
+}
+
+.form-container button {
+    width: 18%; /* Ajuste conforme necessário */
+}
