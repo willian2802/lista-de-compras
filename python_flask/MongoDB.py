@@ -19,4 +19,10 @@ def connect_to_mongo():
     except Exception as e:
         print(e)
         return "Failed to connect to MongoDB"
+
+def insert_list(insert_list):
+
+    db = client['sample_mflix']
+    collection = db['Market_List']
     
+    collection.insert_many(insert_list)

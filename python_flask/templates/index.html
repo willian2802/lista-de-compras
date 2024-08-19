@@ -21,21 +21,19 @@
 
                 <!-- Lista de itens -->
                 <div class="itens">
-                    <p>Nome: Leite, Preço: R$ 5.00</p>
-                    <p>Nome: Peixe, Preço: R$ 10.00</p>
-                    <!-- Mais itens podem ser adicionados aqui -->
+                    <!-- os itens vão ser renderizados aqui pelo render.js -->
                 </div>
 
                 <!-- Rodapé -->
                 <div class="footer">
-                    <p class="preco">Preço Total: R$ 15.00</p>
-                    <form action="/add_list" method="post" class="form-container">
+                    <p class="preco" id="preco_total"></p>
+                    <form action="" class="form-container">
                         <input type="text" name="item_name" placeholder="Nome do Produto">
                         <input type="number" name="item_price" placeholder="Preço">
-                        <button class="btn btn-primary">Adicionar</button>
+                        <button class="btn btn-primary" onclick="adicionarItem(event)">Adicionar</button>
                     </form >
                     <div class="buttons">
-                        <button class="btn btn-success">Confirmar</button>
+                        <button class="btn btn-success" onclick="enviar_Lista_Atual(event)">Confirmar</button>
                         <button class="btn btn-danger">Cancelar</button>
                     </div>
                 </div>
@@ -43,6 +41,10 @@
 
         </div>
     </main>
+
+    <!-- bootstrap and javaScript -->
+    <script type="text/javascript" src="{{ url_for('static', filename='render.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>    
 </body>
 </html>
 
