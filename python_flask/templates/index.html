@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,30 +15,23 @@
     <main>
         <div class="list_container">
 
-            <div class="basic_layout">
+            <div class="login_layout">
                 <!-- Cabeçalho -->
-                <h3 class="header">Lista de Compras</h3>
+                <h3 class="header">Login</h3>                
 
-                <!-- Lista de itens -->
-                <div class="itens">
-                    <!-- os itens vão ser renderizados aqui pelo render.js -->
-                </div>
-
-                <!-- Rodapé -->
-                <div class="footer">
-                    <p class="preco" id="preco_total"></p>
-                    <form action="" class="form-container">
-                        <input type="text" name="item_name" placeholder="Nome do Produto">
-                        <input type="number" name="item_price" placeholder="Preço">
-                        <button class="btn btn-primary" onclick="adicionarItem(event)">Adicionar</button>
-                    </form >
-                    <div class="buttons">
-                        <button class="btn btn-success" onclick="enviar_Lista_Atual(event)">Confirmar</button>
-                        <button class="btn btn-danger">Cancelar</button>
+                <!-- Login -->
+                <form action="/Just_login" method="POST">
+                    <div class="col">
+                        <input type="text" name="username" placeholder="Username">
+                        <input type="password" name="password" placeholder="Password">
+                        <div class="button-group">
+                            <button type="submit" name="action" value="login" class="btn btn-primary">Entrar</button>
+                            <button type="submit" name="action" value="register" class="btn btn-danger">Registrar</button>
+                        </div>
                     </div>
-                </div>
+                </form>
 
-
+            </div>
         </div>
     </main>
 
@@ -60,3 +53,27 @@
                     </div>
                 </form>
             </div> -->
+
+
+
+<!-- Cabeçalho -->
+<h3 class="header">Lista de Compras</h3>
+
+<!-- Lista de itens -->
+<div class="itens">
+    <!-- os itens vão ser renderizados aqui pelo render.js -->
+</div>
+
+<!-- Rodapé -->
+<div class="footer">
+    <p class="preco" id="preco_total"></p>
+    <form action="" class="form-container">
+        <input type="text" name="item_name" placeholder="Nome do Produto">
+        <input type="number" name="item_price" placeholder="Preço">
+        <button class="btn btn-primary" onclick="adicionarItem(event)">Adicionar</button>
+    </form >
+    <div class="buttons">
+        <button class="btn btn-success" onclick="enviar_Lista_Atual(event)">Confirmar</button>
+        <button class="btn btn-danger" onclick="exit_actual_list(event)">Cancelar</button>
+    </div>
+</div>

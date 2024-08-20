@@ -2,6 +2,9 @@
 
 const list_space = document.querySelector('.itens')
 const preco_total = document.querySelector('#preco_total')
+const box_space = document.querySelector('.basic_layout')
+
+
 
 lista_atual = [
     {
@@ -14,38 +17,70 @@ lista_atual = [
     }
 ]
 
+function exit_actual_list() {
+    box_space.innerHTML = ''
+}
+
+function render_list() {
+    list_space.innerHTML = ''
+
+    list_space.innerHTML = `
+    <!-- Cabeçalho -->
+<h3 class="header">Lista de Compras</h3>
+
+<!-- Lista de itens -->
+<div class="itens">
+    <!-- os itens vão ser renderizados aqui pelo render.js -->
+</div>
+
+<!-- Rodapé -->
+<div class="footer">
+    <p class="preco" id="preco_total"></p>
+    <form action="" class="form-container">
+        <input type="text" name="item_name" placeholder="Nome do Produto">
+        <input type="number" name="item_price" placeholder="Preço">
+        <button class="btn btn-primary" onclick="adicionarItem(event)">Adicionar</button>
+    </form >
+    <div class="buttons">
+        <button class="btn btn-success" onclick="enviar_Lista_Atual(event)">Confirmar</button>
+        <button class="btn btn-danger" onclick="exit_actual_list(event)">Cancelar</button>
+    </div>
+</div>
+`
+} 
+
 
 function calcularTotal() {
     let total = 0
     lista_atual.forEach(element => {
-      total += parseFloat(element.price)
+        total += parseFloat(element.price)
     });
     return total
-  }
+}
 
-// gera a lista e atualizada o preço total
+// gera a lista e atualiza o preço total
 function gerarLista() {
 
     // Limpa o espaço de itens
     list_space.innerHTML = ''
 
-    // adiciona os itens
+    // Adiciona os itens
     lista_atual.forEach(element => {
-    list_space.innerHTML += `<p>Nome: ${element.name}, Preço: R$ ${element.price}</p>`
+        list_space.innerHTML += `<p>Nome: ${element.name}, Preço: R$ ${element.price}</p>`
     });
 
-    // atualizada o preço total
+    // Atualiza o preço total
     preco_total.innerHTML = `Preço Total: R$ ${calcularTotal()}`
     
 }
 
 function adicionarItem(event) {
-    // evita que o site seja reiniciado toda vez que o button submit e clicado
+    // Evita que o site seja reiniciado toda vez que o button submit é clicado
     event.preventDefault();
     let name = document.querySelector('input[name="item_name"]').value
     let price = document.querySelector('input[name="item_price"]').value
 
-    // verifica se o preço foi preenchido
+    // Verifica se o preço foi preenchido
     if (!price) {
         alert('Preencha no minimo o campo preço')
         return
@@ -58,23 +93,26 @@ function adicionarItem(event) {
 
 gerarLista()
 
-
-// Envia informaçoes para o servidor
-
-
+// Envia informações para o servidor
 function enviar_Lista_Atual() {
 
-    // pega a lista atual
-    let insert_list = lista_atual
+    // Pega a lista atual
+    let insert_list = {
+        user_id: "exemplo_user_id",  // Este ID será substituído pelo backend
+        created_at: new Date().toISOString(),
+        items: lista_atual,
+        total_price: calcularTotal()
+    };
 
-    // Envia informaçoes para o servidor
+    // Envia informações para o endereço que vai enviar para o DB
     fetch('http://127.0.0.1:5000/process_list', {
-
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(insert_list)
     })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Erro: erro no envio da lista_atual', error));
 }
-

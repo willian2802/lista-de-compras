@@ -48,6 +48,14 @@ main {
     margin-bottom: 20px;
 }
 
+input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: none;
+}
+
 /* -----Footer----- */
 
 
@@ -89,4 +97,33 @@ main {
 
 .form-container button {
     width: 18%; /* Ajuste conforme necessário */
+}
+
+
+/* ---------------------------- Login layout ---------------------------- */
+
+.login_layout {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    background-color: black;
+    padding: 20px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    background-color: rgb(11, 11, 37);
+    opacity: 0.9;
+}
+
+.login_layout button {
+    width: 30%;
+    
+}
+
+
+.button-group {
+    display: flex;
+    justify-content: space-between; /* Garante que os botões fiquem nos extremos */
+    width: 100%; /* Ocupa toda a largura disponível */
+    margin-top: 20px; /* Espaço acima dos botões */
 }
