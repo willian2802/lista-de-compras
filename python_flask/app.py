@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request,jsonify, session, redirect, url_for
+from flask_socketio import SocketIO
 
 from pymongo import MongoClient
 from bson.objectid import ObjectId
@@ -6,12 +7,13 @@ from pymongo.server_api import ServerApi
 
 from MongoDB import register_user, login_user
 
-
 app = Flask(__name__)
 
 
 # Configura a chave secreta
 app.secret_key = 'sua_chave_secreta'  # Necessária para sessões seguras
+socketio = SocketIO(app)
+
 
 # Conecta ao MongoDB
 uri = "mongodb+srv://williansouza11922:Herika40@cluster0.ajgv5lu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
@@ -22,6 +24,11 @@ client = MongoClient(uri, server_api=ServerApi('1'))
 db = client['sample_mflix']
 users_collection = db['Market_users']
 shopping_history_collection = db['market_history']
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 
 # login e verifica se o usuário existe no DB
@@ -37,18 +44,14 @@ def handle_login_register():
     else:
 
         if action == 'login':
-            return login_user(username, password)  # Função Python para login
+            response = login_user(username, password)  # Função Python para login
+            if response == True:
+                return socketio.emit('trigger_js_function')
         elif action == 'register':
             return register_user(username, password)  # Função Python para registro
         else:
             return redirect(url_for('index'))  # Redireciona para a página inicial ou outra página
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-
-# aqui que a lista vai ser enviada para o mongoDB
+        
 @app.route('/process_list', methods=['POST'])
 def process_list():
     data = request.json

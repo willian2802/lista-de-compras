@@ -1,4 +1,5 @@
 from flask import jsonify, session, redirect, url_for
+
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from bson.objectid import ObjectId
@@ -49,5 +50,8 @@ def login_user(username, password):
     # Lógica de login
     user = users_collection.find_one({"username": username, "password": password})
 
-    session['user_id'] = str(user['_id'])
-    return jsonify({"message": "Login bem-sucedido"})
+    if user:
+        session['user_id'] = str(user['_id'])
+        return True
+    else:
+        return False

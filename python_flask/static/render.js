@@ -5,7 +5,6 @@ const preco_total = document.querySelector('#preco_total')
 const box_space = document.querySelector('.basic_layout')
 
 
-
 lista_atual = [
     {
         'name': 'Leite',
@@ -18,11 +17,11 @@ lista_atual = [
 ]
 
 function exit_actual_list() {
-    box_space.innerHTML = ''
+    box_space.innerHTML = ` `
 }
 
 function render_list() {
-    list_space.innerHTML = ''
+    list_space.innerHTML = ` `
 
     list_space.innerHTML = `
     <!-- Cabeçalho -->
@@ -62,7 +61,7 @@ function calcularTotal() {
 function gerarLista() {
 
     // Limpa o espaço de itens
-    list_space.innerHTML = ''
+    list_space.innerHTML = ` `
 
     // Adiciona os itens
     lista_atual.forEach(element => {
@@ -91,8 +90,6 @@ function adicionarItem(event) {
     gerarLista()
 }
 
-gerarLista()
-
 // Envia informações para o servidor
 function enviar_Lista_Atual() {
 
@@ -116,3 +113,51 @@ function enviar_Lista_Atual() {
     .then(data => console.log(data))
     .catch(error => console.error('Erro: erro no envio da lista_atual', error));
 }
+
+
+// resposta do servidor sobre o login se for bem-sucedido => renderiza a web-page se nao => mostra o erro
+function try_to_login(): {
+    $.ajax({
+        type: "POST",
+        url: "/Just_login",
+        data: {
+        action: "login",
+        username: $("#username").val(),
+        password: $("#password").val()
+        },
+        success: function(response) {
+        if (response.success) {
+            // Update the page content here
+            render_history_space();
+        } else {
+            // Handle login failure
+            console.log(response.message);
+        }
+        }
+    });
+}
+
+
+var socket = io();
+
+        socket.on('render_history_space', function() {
+            render_history_space();
+        });
+
+  function render_history_space() {
+    console.log("Render history space is on!!!!");
+    print("Render history space is on!!!!");
+
+//     box_space.innerHTML = ` `
+
+//     box_space.innerHTML = `
+//     <!-- Cabeçalho -->
+//     <h3 class="header">Historico</h3>
+
+// `
+
+    // For example:
+    // $("#some-element").html("Welcome, " + $("#username").val() + "!");
+    // or
+    // window.location.href = "/dashboard";
+  }
