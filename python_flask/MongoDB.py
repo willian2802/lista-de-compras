@@ -55,3 +55,8 @@ def login_user(username, password):
         return True
     else:
         return False
+
+# Exemplo de recuperação de listas do usuário
+def recuperar_listas(user_id):
+    listas = db.listas.find({"user_id": ObjectId(user_id)})
+    return list(listas)

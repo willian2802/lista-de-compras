@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request,jsonify, session, redirect, url_for
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for, Response
 from flask_socketio import SocketIO
 
 from pymongo import MongoClient
@@ -38,20 +38,24 @@ def handle_login_register():
     username = request.form.get('username')
     password = request.form.get('password')
 
-    # verifica se os campos foram preenchidos
     if username is None or password is None:
-        return 'Por favor, preencha todos os campos!'
+        return jsonify(success=False, message="Por favor, preencha todos os campos!")
     else:
-
         if action == 'login':
-            response = login_user(username, password)  # Função Python para login
-            if response == True:
-                return socketio.emit('trigger_js_function')
+            Server_response = login_user(username, password)
+            if Server_response == True:
+                print("Login realizado com sucesso!")
+                # Retorne uma resposta de sucesso
+                
+                return jsonify(success=True)
+            else:
+                return jsonify(success=False, message="Usuário ou senha inválidos!")
         elif action == 'register':
-            return register_user(username, password)  # Função Python para registro
+            return register_user(username, password)
         else:
-            return redirect(url_for('index'))  # Redireciona para a página inicial ou outra página
-        
+            return jsonify(success=False, message="Ação inválida!")
+
+
 @app.route('/process_list', methods=['POST'])
 def process_list():
     data = request.json
@@ -71,7 +75,7 @@ def process_list():
     return jsonify({"message": "Lista de compras salva com sucesso!"})
 
 # historico de compras do usuario
-@app.route('/shopping_history', methods=['GET'])
+@app.route('/user_history', methods=['GET'])
 def shopping_history():
     if 'user_id' not in session:
         return jsonify({"message": "Usuário não autenticado"}), 401

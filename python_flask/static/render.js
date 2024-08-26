@@ -3,6 +3,7 @@
 const list_space = document.querySelector('.itens')
 const preco_total = document.querySelector('#preco_total')
 const box_space = document.querySelector('.basic_layout')
+const list_container = document.querySelector('.list_container')
 
 
 lista_atual = [
@@ -21,30 +22,35 @@ function exit_actual_list() {
 }
 
 function render_list() {
-    list_space.innerHTML = ` `
 
-    list_space.innerHTML = `
-    <!-- Cabeçalho -->
-<h3 class="header">Lista de Compras</h3>
+    list_container.innerHTML = ` `
 
-<!-- Lista de itens -->
-<div class="itens">
-    <!-- os itens vão ser renderizados aqui pelo render.js -->
-</div>
+    list_container.innerHTML = `
+    <div class="basic_layout">
+                <!-- Cabeçalho -->
+                <h3 class="header">Lista de Compras</h3>
 
-<!-- Rodapé -->
-<div class="footer">
-    <p class="preco" id="preco_total"></p>
-    <form action="" class="form-container">
-        <input type="text" name="item_name" placeholder="Nome do Produto">
-        <input type="number" name="item_price" placeholder="Preço">
-        <button class="btn btn-primary" onclick="adicionarItem(event)">Adicionar</button>
-    </form >
-    <div class="buttons">
-        <button class="btn btn-success" onclick="enviar_Lista_Atual(event)">Confirmar</button>
-        <button class="btn btn-danger" onclick="exit_actual_list(event)">Cancelar</button>
+                <!-- Lista de itens -->
+                <div class="itens">
+                    <p>Nome: Leite, Preço: R$ 5.00</p>
+                    <p>Nome: Peixe, Preço: R$ 10.00</p>
+                    <!-- Mais itens podem ser adicionados aqui -->
+                </div>
+
+                <!-- Rodapé -->
+                <div class="footer">
+                    <p class="preco">Preço Total: R$ 15.00</p>
+                    <form action="/add_list" method="post" class="form-container">
+                        <input type="text" name="item_name" placeholder="Nome do Produto">
+                        <input type="number" name="item_price" placeholder="Preço">
+                        <button class="btn btn-primary">Adicionar</button>
+                    </form >
+                    <div class="buttons">
+                        <button class="btn btn-success">Confirmar</button>
+                        <button class="btn btn-danger">Cancelar</button>
+                    </div>
+                </div>
     </div>
-</div>
 `
 } 
 
@@ -116,48 +122,89 @@ function enviar_Lista_Atual() {
 
 
 // resposta do servidor sobre o login se for bem-sucedido => renderiza a web-page se nao => mostra o erro
-function try_to_login(): {
+$("form").on("submit", function(event) {
+    // Previne o comportamento padrão de envio do formulário que faz com que o site recarregue a pagina de login
+    event.preventDefault(); // Evita o comportamento padrão de envio do formulário
+
     $.ajax({
         type: "POST",
         url: "/Just_login",
         data: {
-        action: "login",
-        username: $("#username").val(),
-        password: $("#password").val()
+            action: "login",
+            username: $("#username").val(),
+            password: $("#password").val()
         },
         success: function(response) {
-        if (response.success) {
-            // Update the page content here
-            render_history_space();
-        } else {
-            // Handle login failure
-            console.log(response.message);
-        }
+            if (response.success) {
+                // Update the page content here
+                render_history_space();
+            } else {
+                // Handle login failure
+                alert("Login failed: " + response.message);
+                console.log(response.message);
+            }
         }
     });
+})
+
+function render_history_space() {
+    console.log('IS working!!!');
+
+    list_container.innerHTML = ` `
+
+    list_container.innerHTML = `
+    <div class="basic_layout">
+                <!-- Cabeçalho -->
+                <h3 class="styled_title">Historico de Listas</h3>
+
+                <!-- Todas as lista do usuario -->
+                <div class="itens">
+                    <p>Nome: Leite, Preço: R$ 5.00</p>
+                    <p>Nome: Peixe, Preço: R$ 10.00</p>
+                    <!-- Mais itens podem ser adicionados aqui -->
+                </div>
+
+                <!-- Rodapé -->
+                <div class="footer history_footer">
+                    <h4 class="styled_title">Criar Lista</h4>
+                    <form action="/create_list" method="post" class="form-container">
+                        <input type="text" name="list_name" placeholder="Nome da lista">
+                        <button  class="btn btn-primary history_list_button">Criar Lista</button>
+                    </form >
+                </div>
+    </div>
+    `
 }
 
+// const socket = io();
 
-var socket = io();
+// socket.on('render_history_space', function() {
+//     console.log('Received render_history_space event!');
+//     render_history_space();
+// });
 
-        socket.on('render_history_space', function() {
-            render_history_space();
-        });
 
-  function render_history_space() {
-    console.log("Render history space is on!!!!");
-    print("Render history space is on!!!!");
 
-//     box_space.innerHTML = ` `
+// div class="basic_layout">    
+//             <!-- Cabeçalho -->
+//         <h3 class="header">Lista de Compras</h3>
 
-//     box_space.innerHTML = `
-//     <!-- Cabeçalho -->
-//     <h3 class="header">Historico</h3>
+//         <!-- Lista de itens -->
+//         <div class="itens">
+//             <!-- os itens vão ser renderizados aqui pelo render.js -->
+//         </div>
 
-// `
-
-    // For example:
-    // $("#some-element").html("Welcome, " + $("#username").val() + "!");
-    // or
-    // window.location.href = "/dashboard";
-  }
+//         <!-- Rodapé -->
+//         <div class="footer">
+//             <p class="preco" id="preco_total"></p>
+//             <form action="" class="form-container">
+//                 <input type="text" name="item_name" placeholder="Nome do Produto">
+//                 <input type="number" name="item_price" placeholder="Preço">
+//                 <button class="btn btn-primary" onclick="adicionarItem(event)">Adicionar</button>
+//             </form >
+//             <div class="buttons">
+//                 <button class="btn btn-success" onclick="enviar_Lista_Atual(event)">Confirmar</button>
+//                 <button class="btn btn-danger" onclick="exit_actual_list(event)">Cancelar</button>
+//             </div>
+//         </div>
+//     </div>
