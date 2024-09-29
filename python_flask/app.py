@@ -5,7 +5,7 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 from pymongo.server_api import ServerApi
 
-from MongoDB import register_user, login_user
+from MongoDB import register_user, login_user, insert_list, create_user_history
 
 app = Flask(__name__)
 
@@ -44,54 +44,60 @@ def handle_login_register():
         if action == 'login':
             Server_response = login_user(username, password)
             if Server_response == True:
-                print("Login realizado com sucesso!")
                 # Retorne uma resposta de sucesso
-                
-                return jsonify(success=True)
+                # e adiciona no session os dados do usuário
+                session['user_id'] = username
+                session['authentication'] = True
+                return jsonify(success=True, message=session['user_id'])
             else:
                 return jsonify(success=False, message="Usuário ou senha inválidos!")
-        elif action == 'register':
-            return register_user(username, password)
-        else:
-            return jsonify(success=False, message="Ação inválida!")
-
+            
+        elif action == 'Register':
+            resposta_regristo = register_user(username, password)
+            if resposta_regristo == False:
+                return jsonify(success=False, message="O nome de usuário ja existe!")
+            else:
+                return jsonify(success=True, message="Usuario criado com sucesso!")
 
 @app.route('/process_list', methods=['POST'])
 def process_list():
+    print("Processando lista de compras is on !!!!!!!!!!!!!!!!!!!!!")
     data = request.json
-    user_id = data['user_id']  # No código real, substitua pelo ID do usuário logado na sessão
-    created_at = data['created_at']
-    items = data['items']
-    total_price = data['total_price']
-    
-    # Inserir a lista de compras no banco de dados
-    shopping_history_collection.insert_one({
-        "user_id": ObjectId(user_id),
-        "created_at": created_at,
-        "items": items,
-        "total_price": total_price
-    })
-    
-    return jsonify({"message": "Lista de compras salva com sucesso!"})
+    status = insert_list(data)
 
-# historico de compras do usuario
+
+    if status == True:
+        return jsonify({"message": "Lista de compras salva com sucesso!"})
+    return jsonify({"message": "Erro ao salvar a lista de compras"})
+
+# historico de listas cridas pelo usuario do usuario
 @app.route('/user_history', methods=['GET'])
 def shopping_history():
     if 'user_id' not in session:
         return jsonify({"message": "Usuário não autenticado"}), 401
     
     user_id = ObjectId(session['user_id'])
-    history = shopping_history_collection.find({"user_id": user_id})
+    
+    # Buscando o usuário pelo ID
+    user_data = shopping_history_collection.find_one({"_id": user_id})
+    
+    # Verificando se o usuário existe e se há listas associadas
+    if not user_data or 'lista' not in user_data:
+        return jsonify({"message": "Nenhuma lista encontrada"}), 404
     
     history_list = []
-    for record in history:
+    
+    # Iterando sobre cada lista do usuário
+    for lista in user_data['lista']:
         history_list.append({
-            "created_at": record['created_at'],
-            "items": record['items'],
-            "total_price": record['total_price']
+            "list_name": lista['list_name'],
+            "created_at": lista['created_at'],
+            "items": lista['items'],
+            "total_price": lista['total_price']
         })
     
     return jsonify(history_list)
+
 
 
 if __name__ == '__main__':

@@ -1,21 +1,31 @@
 // Lista de compras
 
-const list_space = document.querySelector('.itens')
 const preco_total = document.querySelector('#preco_total')
 const box_space = document.querySelector('.basic_layout')
 const list_container = document.querySelector('.list_container')
 
-
+usuario_atual = ''
+nome_nova_lista = ''
 lista_atual = [
-    {
-        'name': 'Leite',
-        'price': 5
-    },
-    {
-        'name': 'Peixe',
-        'price': 10
-    }
+    
 ]
+
+
+function alert_message(alert_Content) {
+    alert(alert_Content); 
+}
+
+
+ function criarLista(event, list_name) {
+    event.preventDefault()
+
+    nome_nova_lista = list_name
+    
+    lista_atual = [
+        
+    ]
+    render_list()
+ }
 
 function exit_actual_list() {
     box_space.innerHTML = ` `
@@ -31,7 +41,7 @@ function render_list() {
                 <h3 class="header">Lista de Compras</h3>
 
                 <!-- Lista de itens -->
-                <div class="itens">
+                <div class="itens" id="itens">
                     <p>Nome: Leite, Preço: R$ 5.00</p>
                     <p>Nome: Peixe, Preço: R$ 10.00</p>
                     <!-- Mais itens podem ser adicionados aqui -->
@@ -39,19 +49,19 @@ function render_list() {
 
                 <!-- Rodapé -->
                 <div class="footer">
-                    <p class="preco">Preço Total: R$ 15.00</p>
-                    <form action="/add_list" method="post" class="form-container">
-                        <input type="text" name="item_name" placeholder="Nome do Produto">
-                        <input type="number" name="item_price" placeholder="Preço">
-                        <button class="btn btn-primary">Adicionar</button>
-                    </form >
+                    <p class="preco" id="preco_total"></p>
+                    <input type="text" name="item_name" placeholder="Nome do Produto">
+                    <input type="number" name="item_price" placeholder="Preço">
+                    <button class="btn btn-primary" onclick="adicionarItem(event)">Adicionar</button>
                     <div class="buttons">
-                        <button class="btn btn-success">Confirmar</button>
-                        <button class="btn btn-danger">Cancelar</button>
+                        <button class="btn btn-success" onclick="enviar_Lista_Atual(event)">Confirmar</button>
+                        <button class="btn btn-danger" onclick="render_history_space()">Cancelar</button>
                     </div>
                 </div>
     </div>
 `
+    
+    gerarLista()
 } 
 
 
@@ -65,6 +75,7 @@ function calcularTotal() {
 
 // gera a lista e atualiza o preço total
 function gerarLista() {
+    const list_space = document.querySelector('#itens')
 
     // Limpa o espaço de itens
     list_space.innerHTML = ` `
@@ -92,20 +103,21 @@ function adicionarItem(event) {
     }
 
     lista_atual.push({name, price})
-    console.log(lista_atual)
     gerarLista()
 }
 
-// Envia informações para o servidor
+// Envia a nova lista para o servidor
 function enviar_Lista_Atual() {
 
-    // Pega a lista atual
+    // formato em que a lista vai ser enviada para o DB
     let insert_list = {
-        user_id: "exemplo_user_id",  // Este ID será substituído pelo backend
+        list_name: nome_nova_lista,
+        user_id: usuario_atual,  // Este ID será substituído pelo backend
         created_at: new Date().toISOString(),
         items: lista_atual,
         total_price: calcularTotal()
     };
+    console.log(insert_list)
 
     // Envia informações para o endereço que vai enviar para o DB
     fetch('http://127.0.0.1:5000/process_list', {
@@ -116,10 +128,23 @@ function enviar_Lista_Atual() {
         body: JSON.stringify(insert_list)
     })
     .then(response => response.json())
-    .then(data => console.log(data))
+    .then(data => {
+        mensagen = data;
+        alert_message(mensagen.message);
+        
+        // limpa a lista atual
+        nome_nova_lista = ''
+        lista_atual = [
+            
+        ]
+        render_list()
+        
+    })
     .catch(error => console.error('Erro: erro no envio da lista_atual', error));
 }
 
+
+// lida com o login
 
 // resposta do servidor sobre o login se for bem-sucedido => renderiza a web-page se nao => mostra o erro
 $("form").on("submit", function(event) {
@@ -137,7 +162,9 @@ $("form").on("submit", function(event) {
         success: function(response) {
             if (response.success) {
                 // Update the page content here
+                usuario_atual = response.message
                 render_history_space();
+                console.log("Login successful: " + usuario_atual);
             } else {
                 // Handle login failure
                 alert("Login failed: " + response.message);
@@ -147,10 +174,32 @@ $("form").on("submit", function(event) {
     });
 })
 
-function render_history_space() {
-    console.log('IS working!!!');
+function registerUser(event) {
+    event.preventDefault(); // Evita o comportamento padrão de envio do formulário
 
-    list_container.innerHTML = ` `
+    $.ajax({
+        type: "POST",
+        url: "/Just_login",
+        data: {
+            action: "Register",
+            username: $("#username").val(),
+            password: $("#password").val()
+        },
+        success: function(response) {
+            if (response.success) {
+                console.log(response.message);
+                // Update the page content here
+                render_history_space();
+            } else {
+                // Handle login failure
+                alert("Login failed: " + response.message);
+                console.log(response.message);
+            }
+        }
+    });
+}
+
+function render_history_space() {
 
     list_container.innerHTML = `
     <div class="basic_layout">
@@ -167,14 +216,33 @@ function render_history_space() {
                 <!-- Rodapé -->
                 <div class="footer history_footer">
                     <h4 class="styled_title">Criar Lista</h4>
-                    <form action="/create_list" method="post" class="form-container">
-                        <input type="text" name="list_name" placeholder="Nome da lista">
-                        <button  class="btn btn-primary history_list_button">Criar Lista</button>
-                    </form >
+                    <input type="text" name="list_name" id="list_name" placeholder="Nome da lista">
+                    <button  class="btn btn-primary history_list_button" onclick="criarLista(event, document.getElementById('list_name').value)">Criar Lista</button>
                 </div>
     </div>
     `
 }
+
+function render_history_list() {
+
+    // pega as listas do servidor
+    $.ajax({
+        type: "GET",
+        url: "/user_history",
+        data: {
+            action: "Grab_users_lists",
+            username: $("#username").val(),
+            password: $("#password").val()
+        },
+        success: function(response) {
+            if (response.success) {
+                console.log(response.message);
+                // Update the page content here
+                render_history_space();
+            } else {
+                // Handle login failure
+                alert("Login failed: " + response.message);
+                console.log(response.message);
 
 // const socket = io();
 

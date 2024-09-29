@@ -14,7 +14,7 @@ client = MongoClient(uri, server_api=ServerApi('1'))
 
 db = client['sample_mflix']
 users_collection = db['Market_users']
-shopping_history_collection = db['market_history']
+shopping_history_collection = db['Market_List']
 
 
 def connect_to_mongo():
@@ -30,21 +30,60 @@ def connect_to_mongo():
         print(e)
         return "Failed to connect to MongoDB"
 
-def insert_list(insert_list):
+def insert_list(list_to_insert):
 
-    collection = db['Market_List']
+    list = list_to_insert
+
+    # Cria um novo historico de usario se nao existir nenhum com o mesmo nome de usario
+    if not shopping_history_collection.find_one({
+        "user_name": list['user_id'],
+    }):
+        # Cria um novo historico de usario
+        shopping_history_collection.insert_one({
+            "user_name": list['user_id'],
+        })
     
-    collection.insert_many(insert_list)
+    # Atualiza o historico do usario com a nova lista
+    shopping_history_collection.update_one({
+                "user_name": list['user_id'],
+            }, {
+                "$push": {
+                    "lista": {
+                        "list_name": list['list_name'],
+                        "created_at": list['created_at'],
+                        "items": list['items'],
+                        "total_price": list['total_price']
+                    }
+                }
+            })
+
+    return True
+
+
+def create_user_history(list_to_insert):
+
+    list = list_to_insert
+
+    shopping_history_collection.insert_one({
+        "user_name": list['user_id'],
+        "lista": [
+            
+        ]
+    })
 
 # Login e registro de usuário
 
 def register_user(username, password):
-    # Lógica de registro
     db = client['sample_mflix']
     collection = db['Market_users']
 
+    # verifica se o nome de usuário ja esta sendo usado no DB
+    existing_user = collection.find_one({"username": username})
+    if existing_user:
+        return False
+
     collection.insert_one({'username': username, 'password': password})
-    return "Usário registrado com sucesso"
+    return True
 
 def login_user(username, password):
     # Lógica de login

@@ -116,7 +116,10 @@ input {
     flex-direction: column
 }
 
+#list_name {
+    max-width: 300px;
 
+}
 
 /* ---------------------------- Login layout ---------------------------- */
 

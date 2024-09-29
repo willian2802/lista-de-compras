@@ -27,7 +27,7 @@
                         <input type="password" id="password" name="password" placeholder="Password">
                         <div class="button-group">
                             <button type="submit" name="action" value="login" class="btn btn-primary">Entrar</button>
-                            <button type="submit" name="action" value="register" class="btn btn-danger">Registrar</button>
+                            <button type="submit" name="action" value="register" class="btn btn-danger" onclick="registerUser(event)">Registrar</button>
                         </div>
                     </div>
                 </form>
@@ -54,27 +54,3 @@
                     </div>
                 </form>
             </div> -->
-
-
-
-<!-- Cabeçalho -->
-<h3 class="header">Lista de Compras</h3>
-
-<!-- Lista de itens -->
-<div class="itens">
-    <!-- os itens vão ser renderizados aqui pelo render.js -->
-</div>
-
-<!-- Rodapé -->
-<div class="footer">
-    <p class="preco" id="preco_total"></p>
-    <form action="" class="form-container">
-        <input type="text" name="item_name" placeholder="Nome do Produto">
-        <input type="number" name="item_price" placeholder="Preço">
-        <button class="btn btn-primary" onclick="adicionarItem(event)">Adicionar</button>
-    </form >
-    <div class="buttons">
-        <button class="btn btn-success" onclick="enviar_Lista_Atual(event)">Confirmar</button>
-        <button class="btn btn-danger" onclick="exit_actual_list(event)">Cancelar</button>
-    </div>
-</div>
