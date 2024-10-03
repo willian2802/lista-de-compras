@@ -28,15 +28,20 @@ shopping_history_collection = db['market_history']
 
 @app.route('/')
 def index():
+    render_js_url = url_for('static', filename='render.js')
     return render_template('index.html')
 
 
 # login e verifica se o usuário existe no DB
 @app.route('/Just_login', methods=['POST'])
 def handle_login_register():
-    action = request.form.get('action')
-    username = request.form.get('username')
-    password = request.form.get('password')
+    data = request.get_json()
+    action = data['action']
+    username = data['username']
+    password = data['password']
+
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    print(action, username, password)
 
     if username is None or password is None:
         return jsonify(success=False, message="Por favor, preencha todos os campos!")
@@ -44,6 +49,7 @@ def handle_login_register():
         if action == 'login':
             Server_response = login_user(username, password)
             if Server_response == True:
+                print("Login efetuado com sucesso!")
                 # Retorne uma resposta de sucesso
                 # e adiciona no session os dados do usuário
                 session['user_id'] = username
@@ -52,7 +58,7 @@ def handle_login_register():
             else:
                 return jsonify(success=False, message="Usuário ou senha inválidos!")
             
-        elif action == 'Register':
+        elif action == 'register':
             resposta_regristo = register_user(username, password)
             if resposta_regristo == False:
                 return jsonify(success=False, message="O nome de usuário ja existe!")
@@ -76,7 +82,7 @@ def shopping_history():
     if 'user_id' not in session:
         return jsonify({"message": "Usuário não autenticado"}), 401
     
-    user_id = ObjectId(session['user_id'])
+    user_id = session['user_id']
     
     # Buscando o usuário pelo ID
     user_data = shopping_history_collection.find_one({"_id": user_id})

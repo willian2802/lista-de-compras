@@ -144,62 +144,56 @@ function enviar_Lista_Atual() {
 }
 
 
-// lida com o login
-
-// resposta do servidor sobre o login se for bem-sucedido => renderiza a web-page se nao => mostra o erro
-$("form").on("submit", function(event) {
-    // Previne o comportamento padrão de envio do formulário que faz com que o site recarregue a pagina de login
+function SendData(event, action) {
     event.preventDefault(); // Evita o comportamento padrão de envio do formulário
-
+    console.log("Sending data to server");
+  
+    acao_desejada = action
+    console.log("Action: " + acao_desejada);
+  
     $.ajax({
-        type: "POST",
-        url: "/Just_login",
-        data: {
-            action: "login",
-            username: $("#username").val(),
-            password: $("#password").val()
-        },
-        success: function(response) {
-            if (response.success) {
-                // Update the page content here
-                usuario_atual = response.message
-                render_history_space();
-                console.log("Login successful: " + usuario_atual);
-            } else {
-                // Handle login failure
-                alert("Login failed: " + response.message);
-                console.log(response.message);
-            }
+      type: "POST",
+      url: "/Just_login",
+      contentType: "application/json", // Add this line
+      data: JSON.stringify({ // Stringify the data object
+        action: acao_desejada,
+        value: $("#value").val(),
+        username: $("#username").val(),
+        password: $("#password").val()
+      }),
+      success: function(response) {
+        if (response.success == true) {
+          usuario_atual = response.message
+          // Update the page content here
+          render_history_space();
+        } else {
+          // Handle login failure
+          alert("Login failed: " + response.message);
+          console.log(response.message);
         }
+      }
     });
-})
+  }
 
-function registerUser(event) {
-    event.preventDefault(); // Evita o comportamento padrão de envio do formulário
-
-    $.ajax({
-        type: "POST",
-        url: "/Just_login",
-        data: {
-            action: "Register",
-            username: $("#username").val(),
-            password: $("#password").val()
-        },
-        success: function(response) {
-            if (response.success) {
-                console.log(response.message);
-                // Update the page content here
-                render_history_space();
-            } else {
-                // Handle login failure
-                alert("Login failed: " + response.message);
-                console.log(response.message);
-            }
-        }
-    });
-}
 
 function render_history_space() {
+    console.log(list_container);
+    console.log(list_container.innerHTML);
+
+
+    fetch('http://127.0.0.1:5000/user_history', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        lists = data;
+        console.log(lists);
+    })
+    .catch(error => console.error('Erro: erro no envio da lista', error));
+    console.log(lists);
 
     list_container.innerHTML = `
     <div class="basic_layout">
@@ -221,28 +215,31 @@ function render_history_space() {
                 </div>
     </div>
     `
+    // forEach(lists, (list) => {
+    //     list_container.innerHTML += `<p>Nome: ${list.name}</p>`
+    // })
 }
 
-function render_history_list() {
+// function render_history_list() {
 
-    // pega as listas do servidor
-    $.ajax({
-        type: "GET",
-        url: "/user_history",
-        data: {
-            action: "Grab_users_lists",
-            username: $("#username").val(),
-            password: $("#password").val()
-        },
-        success: function(response) {
-            if (response.success) {
-                console.log(response.message);
-                // Update the page content here
-                render_history_space();
-            } else {
-                // Handle login failure
-                alert("Login failed: " + response.message);
-                console.log(response.message);
+//     // pega as listas do servidor
+//     $.ajax({
+//         type: "GET",
+//         url: "/user_history",
+//         data: {
+//             action: "Grab_users_lists",
+//             username: $("#username").val(),
+//             password: $("#password").val()
+//         },
+//         success: function(response) {
+//             if (response.success) {
+//                 console.log(response.message);
+//                 // Update the page content here
+//                 render_history_space();
+//             } else {
+//                 // Handle login failure
+//                 alert("Login failed: " + response.message);
+//                 console.log(response.message);
 
 // const socket = io();
 
@@ -276,3 +273,4 @@ function render_history_list() {
 //             </div>
 //         </div>
 //     </div>
+
