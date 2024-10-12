@@ -5,7 +5,7 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 from pymongo.server_api import ServerApi
 
-from MongoDB import register_user, login_user, insert_list, create_user_history
+from MongoDB import register_user, login_user, insert_list, create_user_history, get_user_history
 
 app = Flask(__name__)
 
@@ -23,12 +23,11 @@ client = MongoClient(uri, server_api=ServerApi('1'))
 
 db = client['sample_mflix']
 users_collection = db['Market_users']
-shopping_history_collection = db['market_history']
+shopping_history_collection = db['Market_List']
 
 
 @app.route('/')
 def index():
-    render_js_url = url_for('static', filename='render.js')
     return render_template('index.html')
 
 
@@ -85,7 +84,7 @@ def shopping_history():
     user_id = session['user_id']
     
     # Buscando o usuário pelo ID
-    user_data = shopping_history_collection.find_one({"_id": user_id})
+    user_data = get_user_history(user_id)
     
     # Verificando se o usuário existe e se há listas associadas
     if not user_data or 'lista' not in user_data:

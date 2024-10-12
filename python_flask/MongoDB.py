@@ -16,20 +16,6 @@ db = client['sample_mflix']
 users_collection = db['Market_users']
 shopping_history_collection = db['Market_List']
 
-
-def connect_to_mongo():
-    # Selecionar o banco de dados
-    db = client['sample_mflix']
-
-    # Send a ping to confirm a successful connection
-    try:
-        client.admin.command('ping')
-        print("Pinged your deployment. You successfully connected to MongoDB!")
-        return "You successfully connected to MongoDB!"
-    except Exception as e:
-        print(e)
-        return "Failed to connect to MongoDB"
-
 def insert_list(list_to_insert):
 
     list = list_to_insert
@@ -71,8 +57,14 @@ def create_user_history(list_to_insert):
         ]
     })
 
-# Login e registro de usuário
+def get_user_history(user_id):
+    user_data = shopping_history_collection.find_one({"user_name": user_id})
 
+    if user_data is None:
+        return False
+    return user_data
+
+# Login e registro de usuário
 def register_user(username, password):
     db = client['sample_mflix']
     collection = db['Market_users']

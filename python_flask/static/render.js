@@ -164,10 +164,10 @@ function SendData(event, action) {
       success: function(response) {
         if (response.success == true) {
           usuario_atual = response.message
-          // Update the page content here
+          // Atualiza o conteúdo da página com o historico de listas do usuário
           render_history_space();
         } else {
-          // Handle login failure
+          // mostra uma mensagem de erro para o usuário
           alert("Login failed: " + response.message);
           console.log(response.message);
         }
@@ -177,9 +177,6 @@ function SendData(event, action) {
 
 
 function render_history_space() {
-    console.log(list_container);
-    console.log(list_container.innerHTML);
-
 
     fetch('http://127.0.0.1:5000/user_history', {
         method: 'GET',
