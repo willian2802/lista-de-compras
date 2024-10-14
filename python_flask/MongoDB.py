@@ -3,9 +3,18 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from bson.objectid import ObjectId
 
+# Conecta ao MongoDB pegando o url pelo arquivo .env
+import os
+from dotenv import load_dotenv
 
+dotenv_path = os.path.join(os.path.dirname(__file__), 'URL.env')
+load_dotenv(dotenv_path)
 
-uri = "mongodb+srv://williansouza11922:Herika40@cluster0.ajgv5lu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+uri = os.environ.get('MONGO_URI', None)
+
+if uri is None:
+    print("Erro: Variável de ambiente MONGO_URI não encontrada")
+    exit(1)
 
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'))
@@ -15,7 +24,7 @@ users_collection = db['Market_users']
 shopping_history_collection = db['Market_List']
 
 def insert_list(list_to_insert):
-
+    
     list = list_to_insert
 
     # Cria um novo historico de usario se nao existir nenhum com o mesmo nome de usario
