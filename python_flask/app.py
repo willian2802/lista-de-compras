@@ -1,9 +1,6 @@
 from flask import Flask, render_template, request, jsonify, session
 from flask_socketio import SocketIO
 
-from pymongo import MongoClient
-from pymongo.server_api import ServerApi
-
 from MongoDB import register_user, login_user, insert_list, get_user_history
 
 app = Flask(__name__)
@@ -12,18 +9,6 @@ app = Flask(__name__)
 # Configura a chave secreta
 app.secret_key = 'sua_chave_secreta'  # Necessária para sessões seguras
 socketio = SocketIO(app)
-
-
-# Conecta ao MongoDB
-uri = "mongodb+srv://williansouza11922:Herika40@cluster0.ajgv5lu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-
-# Create a new client and connect to the server
-client = MongoClient(uri, server_api=ServerApi('1'))
-
-db = client['sample_mflix']
-users_collection = db['Market_users']
-shopping_history_collection = db['Market_List']
-
 
 @app.route('/')
 def index():
@@ -102,8 +87,6 @@ def shopping_history():
         })
     
     return jsonify(history_list)
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)

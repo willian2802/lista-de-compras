@@ -4,6 +4,8 @@ from pymongo.server_api import ServerApi
 from bson.objectid import ObjectId
 
 # Conecta ao MongoDB pegando o url pelo arquivo .env
+# no Mongo_URI bote o seu URI do seu mongoDB, no arquivo URL.env
+
 import os
 from dotenv import load_dotenv
 
@@ -81,8 +83,3 @@ def login_user(username, password):
         return True
     else:
         return False
-
-# Exemplo de recuperação de listas do usuário
-def recuperar_listas(user_id):
-    listas = db.listas.find({"user_id": ObjectId(user_id)})
-    return list(listas)
