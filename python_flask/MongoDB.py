@@ -1,9 +1,7 @@
-from flask import jsonify, session, redirect, url_for
-
+from flask import session
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from bson.objectid import ObjectId
-import datetime
 
 
 
@@ -44,18 +42,6 @@ def insert_list(list_to_insert):
             })
 
     return True
-
-
-def create_user_history(list_to_insert):
-
-    list = list_to_insert
-
-    shopping_history_collection.insert_one({
-        "user_name": list['user_id'],
-        "lista": [
-            
-        ]
-    })
 
 def get_user_history(user_id):
     user_data = shopping_history_collection.find_one({"user_name": user_id})

@@ -1,11 +1,10 @@
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for, Response
+from flask import Flask, render_template, request, jsonify, session
 from flask_socketio import SocketIO
 
 from pymongo import MongoClient
-from bson.objectid import ObjectId
 from pymongo.server_api import ServerApi
 
-from MongoDB import register_user, login_user, insert_list, create_user_history, get_user_history
+from MongoDB import register_user, login_user, insert_list, get_user_history
 
 app = Flask(__name__)
 
@@ -39,8 +38,9 @@ def handle_login_register():
     username = data['username']
     password = data['password']
 
-    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    print(action, username, password)
+    # limpa os dados de sessão
+    session['user_id'] = ""
+    session['authentication'] = ""
 
     if username is None or password is None:
         return jsonify(success=False, message="Por favor, preencha todos os campos!")

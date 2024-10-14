@@ -175,22 +175,18 @@ function SendData(event, action) {
     });
   }
 
+function atualizar_historico(listas_do_usuario) {
+    const itens_space = document.querySelector('.itens');
+
+    console.log(listas_do_usuario);
+
+    listas_do_usuario.forEach((element) => {
+        itens_space.innerHTML += `<p>Nome: ${element.list_name}, Preço: R$ ${element.total_price}</p>`
+    })
+}
+
 
 function render_history_space() {
-
-    fetch('http://127.0.0.1:5000/user_history', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-    })
-    .then(response => response.json())
-    .then(data => {
-        lists = data;
-        console.log(lists);
-    })
-    .catch(error => console.error('Erro: erro no envio da lista', error));
-    console.log(lists);
 
     list_container.innerHTML = `
     <div class="basic_layout">
@@ -212,62 +208,23 @@ function render_history_space() {
                 </div>
     </div>
     `
-    // forEach(lists, (list) => {
-    //     list_container.innerHTML += `<p>Nome: ${list.name}</p>`
-    // })
+
+    // para armazenar as listas do usuário
+    listas_do_usuario = ""
+
+    // pega as listas do usuario do servidor
+    fetch('http://127.0.0.1:5000/user_history', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        listas_do_usuario = data;
+        console.log(listas_do_usuario);
+        // Atualiza o conteúdo da página com o historico de listas do usuário
+        atualizar_historico(listas_do_usuario)
+    })
+    .catch(error => console.error('Erro: erro no envio da lista', error));
 }
-
-// function render_history_list() {
-
-//     // pega as listas do servidor
-//     $.ajax({
-//         type: "GET",
-//         url: "/user_history",
-//         data: {
-//             action: "Grab_users_lists",
-//             username: $("#username").val(),
-//             password: $("#password").val()
-//         },
-//         success: function(response) {
-//             if (response.success) {
-//                 console.log(response.message);
-//                 // Update the page content here
-//                 render_history_space();
-//             } else {
-//                 // Handle login failure
-//                 alert("Login failed: " + response.message);
-//                 console.log(response.message);
-
-// const socket = io();
-
-// socket.on('render_history_space', function() {
-//     console.log('Received render_history_space event!');
-//     render_history_space();
-// });
-
-
-
-// div class="basic_layout">    
-//             <!-- Cabeçalho -->
-//         <h3 class="header">Lista de Compras</h3>
-
-//         <!-- Lista de itens -->
-//         <div class="itens">
-//             <!-- os itens vão ser renderizados aqui pelo render.js -->
-//         </div>
-
-//         <!-- Rodapé -->
-//         <div class="footer">
-//             <p class="preco" id="preco_total"></p>
-//             <form action="" class="form-container">
-//                 <input type="text" name="item_name" placeholder="Nome do Produto">
-//                 <input type="number" name="item_price" placeholder="Preço">
-//                 <button class="btn btn-primary" onclick="adicionarItem(event)">Adicionar</button>
-//             </form >
-//             <div class="buttons">
-//                 <button class="btn btn-success" onclick="enviar_Lista_Atual(event)">Confirmar</button>
-//                 <button class="btn btn-danger" onclick="exit_actual_list(event)">Cancelar</button>
-//             </div>
-//         </div>
-//     </div>
-
