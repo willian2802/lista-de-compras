@@ -54,6 +54,32 @@ def insert_list(list_to_insert):
 
     return True
 
+# remove list of the user acount 
+def remove_list(user_name, list_name):
+    shopping_history_collection.update_one({
+                "user_name": user_name,
+            }, {
+                "$pull": {
+                    "lista": {
+                        "list_name": list_name
+                    }
+                }
+            })
+    return True
+
+
+# def remove_item(list_id, item_id):
+#     shopping_history_collection.update_one({
+#                 "user_name": list_id,
+#             }, {
+#                 "$pull": {
+#                     "lista": {
+#                         "items": item_id
+#                     }
+#                 }
+#             })
+#     return True
+
 def get_user_history(user_id):
     user_data = shopping_history_collection.find_one({"user_name": user_id})
 

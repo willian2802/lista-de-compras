@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify, session
 from flask_socketio import SocketIO
 
-from MongoDB import register_user, login_user, insert_list, get_user_history
+from MongoDB import register_user, login_user, insert_list, get_user_history, remove_list
 
 app = Flask(__name__)
 
@@ -55,12 +55,11 @@ def process_list():
     data = request.json
     status = insert_list(data)
 
-
     if status == True:
         return jsonify({"message": "Lista de compras salva com sucesso!"})
     return jsonify({"message": "Erro ao salvar a lista de compras"})
 
-# historico de listas cridas pelo usuario do usuario
+# historico de listas criadas pelo usuario do usuario
 @app.route('/user_history', methods=['GET'])
 def shopping_history():
     if 'user_id' not in session:
@@ -88,5 +87,23 @@ def shopping_history():
     
     return jsonify(history_list)
 
+@app.route('/remove_list', methods=['post'])
+def delete_list():
+    if 'user_id' not in session:
+        return jsonify({"message": "Usuário não autenticado"}), 401
+
+    data = request.get_json()
+    list_name = data['list_name']
+    print(list_name)
+    
+    try:
+        remove_list(session['user_id'], list_name)
+        return jsonify({"response": True}), 200
+    except Exception as e:
+        print(f"Error removing list: {e}")
+        return jsonify({"response": False}), 500
+    
+    # return jsonify({"message": "List removed successfully"}), 200
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()

@@ -15,22 +15,7 @@ function alert_message(alert_Content) {
     alert(alert_Content); 
 }
 
-
- function criarLista(event, list_name) {
-    event.preventDefault()
-
-    nome_nova_lista = list_name
-    
-    lista_atual = [
-        
-    ]
-    render_list()
- }
-
-function exit_actual_list() {
-    box_space.innerHTML = ` `
-}
-
+//  add the list creation interface
 function render_list() {
 
     list_container.innerHTML = ` `
@@ -42,8 +27,6 @@ function render_list() {
 
                 <!-- Lista de itens -->
                 <div class="itens" id="itens">
-                    <p>Nome: Leite, Preço: R$ 5.00</p>
-                    <p>Nome: Peixe, Preço: R$ 10.00</p>
                     <!-- Mais itens podem ser adicionados aqui -->
                 </div>
 
@@ -62,7 +45,23 @@ function render_list() {
 `
     
     gerarLista()
-} 
+}
+
+ function criarLista(event, list_name) {
+    event.preventDefault()
+
+    nome_nova_lista = list_name
+    
+    lista_atual = [
+        
+    ]
+    render_list()
+ }
+
+function exit_actual_list() {
+    box_space.innerHTML = ` `
+    nome_nova_lista = ''
+}
 
 
 function calcularTotal() {
@@ -73,23 +72,23 @@ function calcularTotal() {
     return total
 }
 
-// gera a lista e atualiza o preço total
+// generate the actual list and update the full price
 function gerarLista() {
     const list_space = document.querySelector('#itens')
 
-    // Limpa o espaço de itens
-    list_space.innerHTML = ` `
+    // clear the list space
+    list_space.innerHTML = ``
 
-    // Adiciona os itens
+    // add the items
     lista_atual.forEach(element => {
-        list_space.innerHTML += `<p>Nome: ${element.name}, Preço: R$ ${element.price}</p>`
+        list_space.innerHTML += `<p>Nome: ${element.name}, Preço: R$ ${element.price}</p> <button class="btn btn-danger" onclick="removeItem('${element.name}')">Remover</button>`
     });
 
-    // Atualiza o preço total
+    // update the full price
     preco_total.innerHTML = `Preço Total: R$ ${calcularTotal()}`
-    
 }
 
+// add the item to the list
 function adicionarItem(event) {
     // Evita que o site seja reiniciado toda vez que o button submit é clicado
     event.preventDefault();
@@ -101,12 +100,51 @@ function adicionarItem(event) {
         alert('Preencha no minimo o campo preço')
         return
     }
-
     lista_atual.push({name, price})
     gerarLista()
 }
+// Remove the item in the list and update the list
+function removeItem(item_name) {
+    lista_atual = lista_atual.filter(item => item.name !== item_name)
+    gerarLista()
+}
 
-// Envia a nova lista para o servidor
+// render_history_space() 
+function remove_list(list_name) {
+    fetch('http://127.0.0.1:5000/remove_list', {
+        method: 'post',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({list_name: list_name})
+        }).then(response => response.json())
+            .then(data => {
+                mensagen = data;
+                if (mensagen.response == true) {
+                    render_history_space()
+                }
+    })
+    .catch(error => console.error('Erro: erro no envio da lista_atual', error));
+}
+
+function open_list(list_name) {
+    fetch('http://127.0.0.1:5000/open_list', {
+        method: 'get',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({list_name: list_name})
+        }).then(response => response.json())
+            .then(data => {
+                mensagen = data;
+                if (mensagen.response == true) {
+                    render_list()
+                }
+    })
+    .catch(error => console.error('Erro: erro no envio da lista_atual', error));
+}
+
+// send list to the server
 function enviar_Lista_Atual() {
 
     // formato em que a lista vai ser enviada para o DB
@@ -117,7 +155,6 @@ function enviar_Lista_Atual() {
         items: lista_atual,
         total_price: calcularTotal()
     };
-    console.log(insert_list)
 
     // Envia informações para o endereço que vai enviar para o DB
     fetch('http://127.0.0.1:5000/process_list', {
@@ -137,16 +174,14 @@ function enviar_Lista_Atual() {
         lista_atual = [
             
         ]
-        render_list()
-        
+        render_history_space()
     })
     .catch(error => console.error('Erro: erro no envio da lista_atual', error));
 }
 
-
+// the login is done here
 function SendData(event, action) {
     event.preventDefault(); // Evita o comportamento padrão de envio do formulário
-    console.log("Sending data to server");
   
     acao_desejada = action
     console.log("Action: " + acao_desejada);
@@ -175,19 +210,16 @@ function SendData(event, action) {
     });
   }
 
+// update user list in the list space
 function atualizar_historico(listas_do_usuario) {
     const itens_space = document.querySelector('.itens');
 
-    console.log(listas_do_usuario);
-
     listas_do_usuario.forEach((element) => {
-        itens_space.innerHTML += `<p>Nome: ${element.list_name}, Preço: R$ ${element.total_price}</p>`
+        itens_space.innerHTML += `<p>Nome: ${element.list_name}, Preço: R$ ${element.total_price}</p> <button class="btn btn-danger" onclick="remove_list('${element.list_name}')">Remover</button><button class="btn btn-success" onclick="open_list('${element.list_name}')">abrir</button>`
     })
 }
-
-
+// all the lists of the user saved
 function render_history_space() {
-
     list_container.innerHTML = `
     <div class="basic_layout">
                 <!-- Cabeçalho -->
@@ -195,9 +227,7 @@ function render_history_space() {
 
                 <!-- Todas as lista do usuario -->
                 <div class="itens">
-                    <p>Nome: Leite, Preço: R$ 5.00</p>
-                    <p>Nome: Peixe, Preço: R$ 10.00</p>
-                    <!-- Mais itens podem ser adicionados aqui -->
+                    <!-- itens seram adicionados aqui -->
                 </div>
 
                 <!-- Rodapé -->
@@ -209,10 +239,10 @@ function render_history_space() {
     </div>
     `
 
-    // para armazenar as listas do usuário
+    // to store the user lists
     listas_do_usuario = ""
 
-    // pega as listas do usuario do servidor
+    // pick the user lists in the DB
     fetch('http://127.0.0.1:5000/user_history', {
         method: 'GET',
         headers: {
